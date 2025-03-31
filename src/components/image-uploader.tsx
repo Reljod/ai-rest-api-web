@@ -16,7 +16,6 @@ export const ImageUploader: React.FC = () => {
 
   const formSchema = z.object({
     image: z
-      //Rest of validations done via react dropzone
       .instanceof(File)
       .refine((file) => file.size !== 0, "Please upload an image"),
   });
@@ -55,8 +54,14 @@ export const ImageUploader: React.FC = () => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      console.log(values);
-      alert(`Image uploaded successfully 🎉 ${values.image.name}`);
+      const formData = new FormData();
+      formData.append("image", values.image);
+      const response = await fetch("/api/analyze", {
+        method: "POST",
+        body: formData,
+      });
+      const result = await response.text();
+      console.log(result);
     } catch (error) {
       console.error("Upload failed:", error);
     }
